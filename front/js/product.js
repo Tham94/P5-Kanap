@@ -1,7 +1,8 @@
-
-let currentUrl = window.location.href; // récupération URL actuelle
+// récupération URL actuelle
+let currentUrl = window.location.href; 
 let url = new URL(currentUrl);
-let id = url.searchParams.get("id"); // récupération de l'id du produit à partir de l'url actuelle
+// récupération de l'id du produit à partir de l'url actuelle
+let id = url.searchParams.get("id"); 
 
 //Ajouter image du produit 
 function addProductImage(data){ 
@@ -61,7 +62,7 @@ clickToAdd.addEventListener("click",function addToBasket(){
     if (qtyOfProduct < 1 || qtyOfProduct > 100 || colorOfProduct == ""){
         let product = null;
         if(qtyOfProduct < 1 || qtyOfProduct > 100){
-            alert('Veuillez entrer une quantité entre 0 et 100')
+            alert('Veuillez entrer une quantité entre 1 et 100 inclus')
         }
         if(colorOfProduct == ""){
             alert('Veuillez choisir une couleur')
@@ -69,9 +70,14 @@ clickToAdd.addEventListener("click",function addToBasket(){
     }else{
         let basket = getBasket()
         let product = {"id": id, "quantity" : qtyOfProduct, "color": colorOfProduct};
-        let addedProduct = basket.find(p => p.color == product.color)
+        // Conditions pour incrémenter la quantité si le produit est existant ou ajouter un nouveau produit
+        let addedProduct = basket.find(p => p.color == product.color);
         if (addedProduct!=undefined){
             addedProduct.quantity += qtyOfProduct;
+            // Plafonnement de la quantité à 100
+            if(addedProduct.quantity > 100){
+                return addedProduct.quantity = 100
+            }
         }else{
             product.quantity = qtyOfProduct;
             basket.push(product);
