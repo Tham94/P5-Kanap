@@ -1,7 +1,7 @@
 // récupération URL actuelle
 let currentUrl = window.location.href; 
 let url = new URL(currentUrl);
-// récupération de l'id du produit à partir de l'url actuelle
+// récupération de l'id du produit à partir de l'url actuelle pour pouvoir contacter l'API
 let id = url.searchParams.get("id"); 
 
 //Ajouter image du produit 
@@ -51,46 +51,51 @@ function getBasket(){
     }
 }
 
-// Ajouter le produit au panier au clic du bouton
-let clickToAdd = document.getElementById("addToCart");
-clickToAdd.addEventListener("click",function addToBasket(){
-    // définition d'un produit 
+// définition d'un produit 
+function getProductDetails(){
     let qtyOfProduct = Number(document.getElementById("quantity").value);
     let listOfOptions = document.getElementById("colors");
     let colorOfProduct = listOfOptions.options[listOfOptions.selectedIndex].value;
-    // Conditions pour ne pas ajouter un produit avec 1>quantité>100 ou si sa couleur n'est pas définie
-    if (qtyOfProduct < 1 || qtyOfProduct > 100 || colorOfProduct == ""){
+    let product = {"id": id, "quantity" : qtyOfProduct, "color": colorOfProduct};
+    return product;
+}
+
+// sauvegarder le produit dans le panier de l'API au format JSON
+function saveToBasket(basket){
+    localStorage.setItem("basket",JSON.stringify(basket));
+}
+// Ajouter le produit au panier au clic du bouton
+let clickToAdd = document.getElementById("addToCart");
+clickToAdd.addEventListener("click",function addToBasket(){
+    let product = getProductDetails();
+    if(product.quantity < 1 || product.quantity > 100){
+        alert('Veuillez entrer une quantité entre 1 et 100 inclus')
+    }
+    if(product.color == ""){
+        alert('Veuillez choisir une couleur')
+    }
+    if (product.quantity < 1 || product.quantity > 100 || product.color == ""){
         let product = null;
-        if(qtyOfProduct < 1 || qtyOfProduct > 100){
-            alert('Veuillez entrer une quantité entre 1 et 100 inclus')
-        }
-        if(colorOfProduct == ""){
-            alert('Veuillez choisir une couleur')
-        }
     }else{
-        let basket = getBasket()
-        let product = {"id": id, "quantity" : qtyOfProduct, "color": colorOfProduct};
+    let basket = getBasket();
+    let addedProduct = basket.find(p => p.color == product.color);
         // Conditions pour incrémenter la quantité si le produit est existant ou ajouter un nouveau produit
-        let addedProduct = basket.find(p => p.color == product.color);
         if (addedProduct!=undefined){
-            addedProduct.quantity += qtyOfProduct;
+            addedProduct.quantity += product.quantity;
             // Plafonnement de la quantité à 100
             if(addedProduct.quantity > 100){
                 return addedProduct.quantity = 100
             }
         }else{
-            product.quantity = qtyOfProduct;
+            product.quantity = product.quantity;
             basket.push(product);
         }
-        saveToBasket(basket);
+    saveToBasket(basket);
     }
 });
 
-// sauvegarder le panier dans l'API au format JSON
-function saveToBasket(basket){
-    localStorage.setItem("basket",JSON.stringify(basket));
-}
 
+// contact de l'API
 async function init() {
     let response = await fetch(`http://localhost:3000/api/products/${id}`);
     let data = await response.json();
