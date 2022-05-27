@@ -64,6 +64,7 @@ function getProductDetails(){
 function saveToBasket(basket){
     localStorage.setItem("basket",JSON.stringify(basket));
 }
+
 // Ajouter le produit au panier au clic du bouton
 let clickToAdd = document.getElementById("addToCart");
 clickToAdd.addEventListener("click",function addToBasket(){
