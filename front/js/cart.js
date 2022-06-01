@@ -1,5 +1,4 @@
 
-
 /********************************************************   AJOUT DES ELEMENTS DANS LE DOM  *************************************************************/ 
 
 // Ajouter un article (ajout d'un id pour y rattacher les éléments enfants)
@@ -115,6 +114,7 @@ function addDeleteProductContent(index) {
     document.getElementsByClassName("settings__delete-"+index)[0].appendChild(deleteButton)
 }
 
+
 /********************************************************   GESTION DU PANIER  *************************************************************/ 
 // Récupération du panier sous forme de tableau
 function getBasket() {
@@ -124,6 +124,15 @@ function getBasket() {
 }
 
 let basket = getBasket();
+
+// Affichage quantité totale : filtrage de l'objet avec map(), addition par paire de chaque quantité avec reduce() 
+const totalQuantity = basket.map ( p => p.quantity ).reduce ( ( quantity1, quantity2 ) => quantity1 + quantity2, 0 );
+const textQuantity = document.getElementById("totalQuantity");
+textQuantity.textContent = totalQuantity;
+
+// Affichage prix total :
+
+
 
 // sauvegarder  le panier de l'API au format JSON
 function saveToBasket(basket) {
