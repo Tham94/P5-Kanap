@@ -39,7 +39,7 @@ function addOptionValue(data, index){
     optionValue.textContent= data .colors[index];
 }
 
-/*_____ GESTION PANIER__________*/ 
+/**********************************************  GESTION PANIER ********************************************************/ 
 
 // initialisation panier
 function getBasket(){
