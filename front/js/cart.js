@@ -8,7 +8,6 @@ function addArticle(basket, index) {
     article.setAttribute("data-id", basket[index].id);
     article.setAttribute("data-color", basket[index].color);
     document.getElementById("cart__items").appendChild(article);
-    console.log(article);
 }
 
 // Ajouter une div contenant l'image 
@@ -124,13 +123,32 @@ function getBasket() {
 }
 
 let basket = getBasket();
+let productPriceMapping = {};
 
-// Affichage quantité totale : filtrage de l'objet avec map(), addition par paire de chaque quantité avec reduce() 
-const totalQuantity = basket.map ( p => p.quantity ).reduce ( ( quantity1, quantity2 ) => quantity1 + quantity2, 0 );
-const textQuantity = document.getElementById("totalQuantity");
+function updateTextQuantity() {
+    // Affichage quantité totale : filtrage de l'objet avec map(), addition par paire de chaque quantité avec reduce() 
+    const totalQuantity = getBasket()
+        .map(p => p.quantity)
+        .reduce(
+            (quantity1, quantity2) => quantity1 + quantity2, 
+            0
+        );
+    const textQuantity = document.getElementById("totalQuantity");
+    textQuantity.textContent = totalQuantity;
+}
 
-textQuantity.textContent = totalQuantity;
+// Affichage prix total :
+function updateTotalPrice() {
+    const totalPrice = getBasket()
+        .map((p, index) => ({ id: p.id, quantity: p.quantity }))
+        .reduce(
+            (prevTotal, itemInfo) => prevTotal + itemInfo.quantity * productPriceMapping[itemInfo.id], 
+            0
+        );
 
+    const textTotalPrice = document.getElementById("totalPrice");
+    textTotalPrice.textContent = totalPrice;
+}
 
 // sauvegarder  le panier de l'API au format JSON
 function saveToBasket(basket) {
@@ -141,17 +159,18 @@ function saveToBasket(basket) {
 function deleteProduct (){
     for (let j = 0; j < basket.length; j++) {
         let clickToDelete = document.getElementsByClassName("deleteItem-" + j)[0];
-        clickToDelete.addEventListener("click", () => {
+        let currentItem = basket[j];
 
+        clickToDelete.addEventListener("click", () => {
             let basket = getBasket();
-            let toBeDeleted = basket.filter( p => p.id !== basket[j].id || p.color !== basket[j].color)
+            let itemsToKeep = basket.filter(p => p.id !== currentItem.id || p.color !== currentItem.color)
 
             let section = document.getElementById("cart__items");
             let article = document.getElementsByClassName("cart__item-"+ j)[0];
             section.removeChild(article);
-            saveToBasket(toBeDeleted);
-
-            location.reload(); 
+            saveToBasket(itemsToKeep);
+            updateTextQuantity();
+            updateTotalPrice();
         })
     }
 }
@@ -178,7 +197,8 @@ function modifyQuantity () {
             }
             
             saveToBasket(basket);
-            location.reload(); 
+            updateTextQuantity();
+            updateTotalPrice();
         })
     }
 }
@@ -186,12 +206,13 @@ function modifyQuantity () {
 
 /**************************************************   DEFINITION DES ARTICLES DU PANIER  *******************************************************/ 
 
-
 async function init() {
     for ( let i = 0; i < basket.length; i++ ) {
         // correspondance de l'url pour chaque produit du panier par rapport à son id
         let response = await fetch (`http://localhost:3000/api/products/${basket[i].id}`);
         let data = await response.json ();
+        productPriceMapping[data._id] = data.price;
+
         addArticle(basket,i)
         addImgContent(i)
         addImg(data,i)
@@ -210,6 +231,8 @@ async function init() {
     }
     deleteProduct();
     modifyQuantity();
+    updateTextQuantity();
+    updateTotalPrice();
 }
 
 init();
