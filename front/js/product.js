@@ -96,6 +96,10 @@ clickToAdd.addEventListener("click",() => {
     } else {
         basket.push(product);
     }
+    clickToAdd.textContent = "Produit ajouté";
+    clickToAdd.addEventListener("mousemove", () => {
+        clickToAdd.textContent = "Ajouter au panier";
+    } )
 
     saveToBasket(basket);
 });
