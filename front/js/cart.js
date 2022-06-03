@@ -128,10 +128,8 @@ let basket = getBasket();
 // Affichage quantité totale : filtrage de l'objet avec map(), addition par paire de chaque quantité avec reduce() 
 const totalQuantity = basket.map ( p => p.quantity ).reduce ( ( quantity1, quantity2 ) => quantity1 + quantity2, 0 );
 const textQuantity = document.getElementById("totalQuantity");
+
 textQuantity.textContent = totalQuantity;
-
-// Affichage prix total :
-
 
 
 // sauvegarder  le panier de l'API au format JSON
@@ -144,25 +142,53 @@ function deleteProduct (){
     for (let j = 0; j < basket.length; j++) {
         let clickToDelete = document.getElementsByClassName("deleteItem-" + j)[0];
         clickToDelete.addEventListener("click", () => {
+
             let basket = getBasket();
             let toBeDeleted = basket.filter( p => p.id !== basket[j].id || p.color !== basket[j].color)
+
             let section = document.getElementById("cart__items");
             let article = document.getElementsByClassName("cart__item-"+ j)[0];
             section.removeChild(article);
             saveToBasket(toBeDeleted);
-            // rafraichissement pour suppression sur le DOM
-            window.location.reload(); 
+
+            location.reload(); 
         })
     }
 }
 
+// Modifier la quantité d'un produit
+function modifyQuantity () {
+    for ( let k = 0; k < basket.length; k++ ) {
+        let input = document.getElementsByClassName("itemQuantity-" + k)[0];
+        let product = document.getElementsByClassName("cart__item-" + k )[0];
+
+        input.addEventListener("change", (e) => {
+            // quantité modifiée
+            let updateQuantity = Number(e.target.value); 
+            // détermination de l'index du produit selectionné
+            let addedProductIndex = basket.findIndex( p => p.id === product.dataset.id && p.color === product.dataset.color);
+            let addedProduct = basket[addedProductIndex];
+            // Changement de la quantité du produit du panier
+            addedProduct.quantity = updateQuantity;
+
+            // Plafonnement de la quantité à 100
+            if ( addedProduct.quantity > 100) {
+                addedProduct.quantity = 100;
+                alert('Vous avez atteint la limite de quantité à 100 par commande pour ce produit')
+            }
+            
+            saveToBasket(basket);
+            location.reload(); 
+        })
+    }
+}
 
 
 /**************************************************   DEFINITION DES ARTICLES DU PANIER  *******************************************************/ 
 
 
 async function init() {
-    for (let i = 0; i < basket.length; i++) {
+    for ( let i = 0; i < basket.length; i++ ) {
         // correspondance de l'url pour chaque produit du panier par rapport à son id
         let response = await fetch (`http://localhost:3000/api/products/${basket[i].id}`);
         let data = await response.json ();
@@ -180,9 +206,10 @@ async function init() {
         addInputQuantity(basket,i)
         addContainerOfDelete(i)
         addDeleteProductContent(i)
+
     }
     deleteProduct();
-
+    modifyQuantity();
 }
 
 init();
