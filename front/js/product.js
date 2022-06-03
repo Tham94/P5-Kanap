@@ -96,10 +96,16 @@ clickToAdd.addEventListener("click",() => {
     } else {
         basket.push(product);
     }
-    clickToAdd.textContent = "Produit ajouté";
-    clickToAdd.addEventListener("mousemove", () => {
+    clickToAdd.textContent = "Produit ajouté !";
+    clickToAdd.style.color = '#3EFF00';
+    clickToAdd.style.pointerEvents = 'none';
+
+    setTimeout(() => {
         clickToAdd.textContent = "Ajouter au panier";
-    } )
+        clickToAdd.style.color = 'white';
+        clickToAdd.style.pointerEvents = 'auto';
+
+    }, 1000);
 
     saveToBasket(basket);
 });
