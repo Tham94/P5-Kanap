@@ -212,6 +212,7 @@ function modifyQuantity () {
 
 
 /************************************************************  FORMULAIRE  *******************************************************************/ 
+const REGEXPNAME = new RegExp(/^[A-Za-z\é\è\ê\ñ\ë\Ë\Ê\-]+$/);
 
 // Validation prénom
 const INPUTFIRSTNAME = document.getElementById('firstName');
@@ -221,29 +222,50 @@ INPUTFIRSTNAME.addEventListener('input', () => {
 
 function validateFirstName() {
     let validationTxt = document.getElementById('firstNameErrorMsg');
-    const REGEXPTEXT = new RegExp(/^[A-Za-z]+$/);
 
-    if (INPUTFIRSTNAME.value.match(REGEXPTEXT)) {
+    if (INPUTFIRSTNAME.value.match(REGEXPNAME)) {
         validationTxt.textContent = '\u2705';
+        INPUTFIRSTNAME.style.backgroundColor = 'lightgreen';
     } else {
         validationTxt.textContent = 'Prénom non valide';
+        INPUTFIRSTNAME.style.backgroundColor = '#fbbcbc';
     }
 }
 
 // Validation nom
 const INPUTNAME = document.getElementById('lastName');
 INPUTNAME.addEventListener('input', () => {
-    validateText(this);
+    validateName(this);
 });
 
 function validateName() {
-    let nameValidationTxt = document.getElementById('lastNameErrorMsg');
-    const REGEXPTEXT = new RegExp(/^[A-Za-z]+$/);
+    let validationTxt = document.getElementById('lastNameErrorMsg');
 
-    if (INPUTNAME.value.match(REGEXPTEXT)) {
-        nameValidationTxt.textContent = '\u2705';
+    if (INPUTNAME.value.match(REGEXPNAME)) {
+        validationTxt.textContent = '\u2705';
+        INPUTNAME.style.backgroundColor = 'lightgreen';
     } else {
-        nameValidationTxt.textContent = 'Nom non valide';
+        validationTxt.textContent = 'Nom non valide';
+        INPUTNAME.style.backgroundColor = '#fbbcbc';
+    }
+}
+
+// Validation ville
+const INPUTCITY = document.getElementById('city');
+INPUTCITY.addEventListener('input', () => {
+    validateCity(this);
+});
+
+function validateCity() {
+    let validationTxt = document.getElementById('cityErrorMsg');
+    const REGEXPCITY = new RegExp(/^[A-Za-z\é\è\ê\ñ\ë\Ë\Ê\-]{1,45}$/);
+
+    if (INPUTCITY.value.match(REGEXPCITY)) {
+        validationTxt.textContent = '\u2705';
+        INPUTCITY.style.backgroundColor = 'lightgreen';
+    } else {
+        validationTxt.textContent = 'Ville non valide';
+        INPUTCITY.style.backgroundColor = '#fbbcbc';
     }
 }
 
@@ -255,15 +277,18 @@ INPUTEMAIL.addEventListener('input', () => {
 });
 
 function validateeMail () {
-    let emailValidationTxt = document.getElementById('emailErrorMsg');
+    let validationTxt = document.getElementById('emailErrorMsg');
     const REGEXEPMAIL = new RegExp(/^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/, 'g');
 
     if (INPUTEMAIL.value.match(REGEXEPMAIL)) {
-        emailValidationTxt.textContent = '\u2705';
+        validationTxt.textContent = '\u2705';
+        INPUTEMAIL.style.backgroundColor = 'lightgreen';
     } else {
-        emailValidationTxt.textContent = 'E-mail non valide';
+        validationTxt.textContent = 'E-mail non valide';
+        INPUTEMAIL.style.backgroundColor = '#fbbcbc';
     }
 }
+
 
 
 /**************************************************   DEFINITION DES ARTICLES DU PANIER  *******************************************************/ 
