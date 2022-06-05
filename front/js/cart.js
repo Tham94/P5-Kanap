@@ -214,9 +214,25 @@ function modifyQuantity () {
 /************************************************************  FORMULAIRE  *******************************************************************/ 
 
 
+// Validation nom
+const INPUTNAME = document.getElementById('lastName');
+INPUTNAME.addEventListener('input', () => {
+    validateText(this);
+});
+
+function validateName() {
+    let nameValidationTxt = document.getElementById('lastNameErrorMsg');
+    const REGEXPTEXT = new RegExp(/^[A-Za-z]+$/);
+
+    if (INPUTNAME.value.match(REGEXPTEXT)) {
+        nameValidationTxt.textContent = '\u2705';
+    } else {
+        nameValidationTxt.textContent = 'Nom non valide';
+    }
+}
+
 
 // Validation du format de l'e-mail
-
 const INPUTEMAIL = document.getElementById('email');
 INPUTEMAIL.addEventListener('input', () => {
     validateeMail(this);
@@ -267,7 +283,7 @@ async function init() {
     updateTextQuantity();
     updateTotalPrice();
     validateeMail();
-
+    validateName()
 }
 
 init();
