@@ -122,11 +122,9 @@ function getBasket() {
     return basketArray
 }
 
-let basket = getBasket();
-let productPriceMapping = {};
-
+// Affichage quantité totale : filtrage avec map(), addition par paire de chaque quantité avec reduce()
 function updateTextQuantity() {
-    // Affichage quantité totale : filtrage de l'objet avec map(), addition par paire de chaque quantité avec reduce() 
+
     const totalQuantity = getBasket()
         .map(p => p.quantity)
         .reduce(
@@ -138,11 +136,17 @@ function updateTextQuantity() {
 }
 
 // Affichage prix total :
+
+    // création d'un objet avec clé/value = id/prix (1/2)
+let productPriceMapping = {};
+
 function updateTotalPrice() {
     const totalPrice = getBasket()
-        .map((p, index) => ({ id: p.id, quantity: p.quantity }))
+        .map(p => ({ 
+            id: p.id, 
+            quantity: p.quantity }))
         .reduce(
-            (prevTotal, itemInfo) => prevTotal + itemInfo.quantity * productPriceMapping[itemInfo.id], 
+            (prevTotal, currentItem) => prevTotal + currentItem.quantity * productPriceMapping[currentItem.id], 
             0
         );
 
@@ -157,6 +161,8 @@ function saveToBasket(basket) {
 
 // Supprimer le produit du panier et du DOM  
 function deleteProduct (){
+    let basket = getBasket();
+
     for (let j = 0; j < basket.length; j++) {
         let clickToDelete = document.getElementsByClassName("deleteItem-" + j)[0];
         let currentItem = basket[j];
@@ -177,6 +183,7 @@ function deleteProduct (){
 
 // Modifier la quantité d'un produit
 function modifyQuantity () {
+    let basket = getBasket();
     for ( let k = 0; k < basket.length; k++ ) {
         let input = document.getElementsByClassName("itemQuantity-" + k)[0];
         let product = document.getElementsByClassName("cart__item-" + k )[0];
@@ -207,10 +214,13 @@ function modifyQuantity () {
 /**************************************************   DEFINITION DES ARTICLES DU PANIER  *******************************************************/ 
 
 async function init() {
+    let basket = getBasket();
     for ( let i = 0; i < basket.length; i++ ) {
         // correspondance de l'url pour chaque produit du panier par rapport à son id
         let response = await fetch (`http://localhost:3000/api/products/${basket[i].id}`);
         let data = await response.json ();
+
+        // création d'un objet avec clé/value = id/prix (2/2)
         productPriceMapping[data._id] = data.price;
 
         addArticle(basket,i)
