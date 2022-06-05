@@ -220,7 +220,7 @@ INPUTFIRSTNAME.addEventListener('input', () => {
     validateFirstName(this);
 });
 
-function validateFirstName() {
+function validateFirstName () {
     let validationTxt = document.getElementById('firstNameErrorMsg');
 
     if (INPUTFIRSTNAME.value.match(REGEXPNAME)) {
@@ -238,7 +238,7 @@ INPUTNAME.addEventListener('input', () => {
     validateName(this);
 });
 
-function validateName() {
+function validateName () {
     let validationTxt = document.getElementById('lastNameErrorMsg');
 
     if (INPUTNAME.value.match(REGEXPNAME)) {
@@ -256,7 +256,7 @@ INPUTCITY.addEventListener('input', () => {
     validateCity(this);
 });
 
-function validateCity() {
+function validateCity () {
     let validationTxt = document.getElementById('cityErrorMsg');
     const REGEXPCITY = new RegExp(/^[A-Za-z\é\è\ê\ñ\ë\Ë\Ê\-]{1,45}$/);
 
@@ -269,6 +269,24 @@ function validateCity() {
     }
 }
 
+// Validation de l'adresse
+const INPUTADDRESS = document.getElementById('address');
+INPUTADDRESS.addEventListener('input', () => {
+    validateAddress(this);
+});
+
+function validateAddress () {
+    let validationTxt = document.getElementById('addressErrorMsg')
+    const REGEXPADRESS = new RegExp(/^[a-zA-Z0-9\é\è\ê\ñ\ë\Ë\Ê\s,'-]{10,}$/);
+
+    if (INPUTADDRESS.value.match(REGEXPADRESS)) {
+        validationTxt.textContent = '\u2705';
+        INPUTADDRESS.style.backgroundColor = 'lightgreen';
+    } else {
+        validationTxt.textContent = 'Adresse non valide';
+        INPUTADDRESS.style.backgroundColor = '#fbbcbc';
+    }
+}
 
 // Validation du format de l'e-mail
 const INPUTEMAIL = document.getElementById('email');
@@ -317,15 +335,18 @@ async function init() {
         addInputQuantity(basket,i)
         addContainerOfDelete(i)
         addDeleteProductContent(i)
-
     }
+
     deleteProduct();
     modifyQuantity();
     updateTextQuantity();
     updateTotalPrice();
+
     validateeMail();
     validateName()
-    validateFirstName()
+    validateFirstName();
+    validateCity();
+    validateAddress();
 }
 
 init();
