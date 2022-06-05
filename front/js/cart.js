@@ -125,14 +125,14 @@ function getBasket() {
 // Affichage quantité totale : filtrage avec map(), addition par paire de chaque quantité avec reduce()
 function updateTextQuantity() {
 
-    const totalQuantity = getBasket()
+    const TOTALQUANTITY = getBasket()
         .map(p => p.quantity)
         .reduce(
             (quantity1, quantity2) => quantity1 + quantity2, 
             0
         );
-    const textQuantity = document.getElementById("totalQuantity");
-    textQuantity.textContent = totalQuantity;
+    const TEXTQUANTITY = document.getElementById("totalQuantity");
+    TEXTQUANTITY.textContent = TOTALQUANTITY;
 }
 
 // Affichage prix total :
@@ -141,7 +141,7 @@ function updateTextQuantity() {
 let productPriceMapping = {};
 
 function updateTotalPrice() {
-    const totalPrice = getBasket()
+    const TOTALPRICE = getBasket()
         .map(p => ({ 
             id: p.id, 
             quantity: p.quantity }))
@@ -150,8 +150,8 @@ function updateTotalPrice() {
             0
         );
 
-    const textTotalPrice = document.getElementById("totalPrice");
-    textTotalPrice.textContent = totalPrice;
+    const TEXTTOTALPRICE = document.getElementById("totalPrice");
+    TEXTTOTALPRICE.textContent = TOTALPRICE;
 }
 
 // sauvegarder  le panier de l'API au format JSON
@@ -184,7 +184,7 @@ function deleteProduct (){
 // Modifier la quantité d'un produit
 function modifyQuantity () {
     let basket = getBasket();
-    for ( let k = 0; k < basket.length; k++ ) {
+    for (let k = 0; k < basket.length; k++) {
         let input = document.getElementsByClassName("itemQuantity-" + k)[0];
         let product = document.getElementsByClassName("cart__item-" + k )[0];
 
@@ -207,6 +207,29 @@ function modifyQuantity () {
             updateTextQuantity();
             updateTotalPrice();
         })
+    }
+}
+
+
+/************************************************************  FORMULAIRE  *******************************************************************/ 
+
+
+
+// Validation du format de l'e-mail
+
+const INPUTEMAIL = document.getElementById('email');
+INPUTEMAIL.addEventListener('input', () => {
+    validateeMail(this);
+});
+
+function validateeMail () {
+    let emailValidationTxt = document.getElementById('emailErrorMsg');
+    const REGEXEPMAIL = new RegExp(/^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/, 'g');
+
+    if (INPUTEMAIL.value.match(REGEXEPMAIL)) {
+        emailValidationTxt.textContent = '\u2705';
+    } else {
+        emailValidationTxt.textContent = 'E-mail non valide';
     }
 }
 
@@ -243,6 +266,8 @@ async function init() {
     modifyQuantity();
     updateTextQuantity();
     updateTotalPrice();
+    validateeMail();
+
 }
 
 init();
