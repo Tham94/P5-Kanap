@@ -213,6 +213,22 @@ function modifyQuantity () {
 
 /************************************************************  FORMULAIRE  *******************************************************************/ 
 
+// Validation prénom
+const INPUTFIRSTNAME = document.getElementById('firstName');
+INPUTFIRSTNAME.addEventListener('input', () => {
+    validateFirstName(this);
+});
+
+function validateFirstName() {
+    let validationTxt = document.getElementById('firstNameErrorMsg');
+    const REGEXPTEXT = new RegExp(/^[A-Za-z]+$/);
+
+    if (INPUTFIRSTNAME.value.match(REGEXPTEXT)) {
+        validationTxt.textContent = '\u2705';
+    } else {
+        validationTxt.textContent = 'Prénom non valide';
+    }
+}
 
 // Validation nom
 const INPUTNAME = document.getElementById('lastName');
@@ -284,6 +300,7 @@ async function init() {
     updateTotalPrice();
     validateeMail();
     validateName()
+    validateFirstName()
 }
 
 init();
