@@ -350,9 +350,10 @@ function getContactValues () {
     })
 }
 
+// Envoi du formulaire de contact et récupération de l'orderId
 document.getElementById("order").addEventListener("click", (e) => {
     e.preventDefault();
-
+    // Construction de l'objet contact
     const contact = {
         firstName : sessionStorage.getItem('firstName'),
         lastName : sessionStorage.getItem('lastName'),
@@ -373,8 +374,11 @@ document.getElementById("order").addEventListener("click", (e) => {
             },
         })
         .then((res) =>  res.json())
-        .then((orderDetails) => console.log(orderDetails))
+        //récupération de l'orderId dans le session storage
+        .then((orderDetails) => sessionStorage.setItem('orderId', orderDetails.orderId))
         .catch((err) => console.log(err))
+        // redirection vers l'url de la page de confirmation en fonction de l'orderId
+        window.location.href =`confirmation.html?orderId=${sessionStorage.getItem('orderId')}`;
     } else {
         alert ('Merci de renseigner correctement tous les champs pour envoyer votre commande')
     }
