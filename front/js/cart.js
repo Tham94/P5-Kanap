@@ -1,6 +1,5 @@
 
 /********************************************************   AJOUT DES ELEMENTS DANS LE DOM  *************************************************************/ 
-
 // Ajouter un article (ajout d'un id pour y rattacher les éléments enfants)
 function addArticle(basket, index) {
     let article = document.createElement("article");
@@ -211,7 +210,8 @@ function modifyQuantity () {
 }
 
 
-/************************************************************  FORMULAIRE  *******************************************************************/ 
+/**********************************************************  VALIDATION DU FORMULAIRE  ***************************************************************/ 
+
 const REGEXPNAME = new RegExp(/^[A-Za-z\é\è\ê\ñ\ë\Ë\Ê\-]+$/);
 
 // Validation prénom
@@ -226,9 +226,11 @@ function validateFirstName () {
     if (INPUTFIRSTNAME.value.match(REGEXPNAME)) {
         validationTxt.textContent = '\u2705';
         INPUTFIRSTNAME.style.backgroundColor = 'lightgreen';
+        return true
     } else {
         validationTxt.textContent = 'Prénom non valide';
         INPUTFIRSTNAME.style.backgroundColor = '#fbbcbc';
+        return false
     }
 }
 
@@ -244,9 +246,11 @@ function validateName () {
     if (INPUTNAME.value.match(REGEXPNAME)) {
         validationTxt.textContent = '\u2705';
         INPUTNAME.style.backgroundColor = 'lightgreen';
+        return true
     } else {
         validationTxt.textContent = 'Nom non valide';
         INPUTNAME.style.backgroundColor = '#fbbcbc';
+        return false
     }
 }
 
@@ -258,14 +262,16 @@ INPUTCITY.addEventListener('input', () => {
 
 function validateCity () {
     let validationTxt = document.getElementById('cityErrorMsg');
-    const REGEXPCITY = new RegExp(/^[A-Za-z\é\è\ê\ñ\ë\Ë\Ê\-]{1,45}$/);
+    const REGEXPCITY = new RegExp(/^[A-Za-z\à\é\è\ê\ñ\ë\Ë\Ê\-]{1,45}$/);
 
     if (INPUTCITY.value.match(REGEXPCITY)) {
         validationTxt.textContent = '\u2705';
         INPUTCITY.style.backgroundColor = 'lightgreen';
+        return true
     } else {
         validationTxt.textContent = 'Ville non valide';
         INPUTCITY.style.backgroundColor = '#fbbcbc';
+        return false
     }
 }
 
@@ -277,14 +283,16 @@ INPUTADDRESS.addEventListener('input', () => {
 
 function validateAddress () {
     let validationTxt = document.getElementById('addressErrorMsg')
-    const REGEXPADRESS = new RegExp(/^[a-zA-Z0-9\é\è\ê\ñ\ë\Ë\Ê\s,'-]{10,}$/);
+    const REGEXPADRESS = new RegExp(/^[a-zA-Z0-9\à\é\è\ê\ñ\ë\Ë\Ê\s,'-]{5,}$/);
 
     if (INPUTADDRESS.value.match(REGEXPADRESS)) {
         validationTxt.textContent = '\u2705';
         INPUTADDRESS.style.backgroundColor = 'lightgreen';
+        return true
     } else {
         validationTxt.textContent = 'Adresse non valide';
         INPUTADDRESS.style.backgroundColor = '#fbbcbc';
+        return false
     }
 }
 
@@ -301,12 +309,76 @@ function validateeMail () {
     if (INPUTEMAIL.value.match(REGEXEPMAIL)) {
         validationTxt.textContent = '\u2705';
         INPUTEMAIL.style.backgroundColor = 'lightgreen';
+        return true
     } else {
         validationTxt.textContent = 'E-mail non valide';
         INPUTEMAIL.style.backgroundColor = '#fbbcbc';
+        return false
     }
 }
 
+/**************************************************   ENVOI DU FORMULAIRE  *******************************************************/  
+// Définition du tableau products contenant les Ids des produits
+let products = [];
+function getAllProductId () {
+    return getBasket().map(p => p.id)
+}
+
+products = getAllProductId();
+
+// Stockage des valeurs des inputs dans le session storage pour construire l'objet contact
+function getContactValues () {
+    INPUTFIRSTNAME.addEventListener('change', (e) => {
+        let inputValue = e.target.value;
+        sessionStorage.setItem('firstName', inputValue)
+    })
+    INPUTNAME.addEventListener('change', (e) => {
+        let inputValue = e.target.value;
+        sessionStorage.setItem('lastName', inputValue)
+    })
+    INPUTADDRESS.addEventListener('change', (e) => {
+        let inputValue = e.target.value;
+        sessionStorage.setItem('address', inputValue)
+    })
+    INPUTCITY.addEventListener('change', (e) => {
+        let inputValue = e.target.value;
+        sessionStorage.setItem('city', inputValue)
+    })
+    INPUTEMAIL.addEventListener('change', (e) => {
+        let inputValue = e.target.value;
+        sessionStorage.setItem('email', inputValue)
+    })
+}
+
+document.getElementById("order").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const contact = {
+        firstName : sessionStorage.getItem('firstName'),
+        lastName : sessionStorage.getItem('lastName'),
+        address : sessionStorage.getItem('address'),
+        city : sessionStorage.getItem('city'),
+        email : sessionStorage.getItem('email')
+    }
+    
+    const order = {contact,products};
+
+    if (validateFirstName() && validateName() && validateAddress() && validateCity() && validateeMail()) {
+        fetch ("http://localhost:3000/api/products/order", {
+            method : "POST",
+            body: JSON.stringify(order),
+            headers: {
+                "Content-type" : "application/json",
+                "Accept" : "application/json",
+            },
+        })
+        .then((res) =>  res.json())
+        .then((orderDetails) => console.log(orderDetails))
+        .catch((err) => console.log(err))
+    } else {
+        alert ('Merci de renseigner correctement tous les champs pour envoyer votre commande')
+    }
+});
 
 
 /**************************************************   DEFINITION DES ARTICLES DU PANIER  *******************************************************/ 
@@ -347,6 +419,10 @@ async function init() {
     validateFirstName();
     validateCity();
     validateAddress();
+
+    getAllProductId ();
+    getContactValues();
 }
 
 init();
+
