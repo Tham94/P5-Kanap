@@ -1,5 +1,5 @@
 
-/********************************************************   AJOUT DES ELEMENTS DANS LE DOM  *************************************************************/ 
+/***************************************   FONCTIONS POUR AJOUT DES ELEMENTS DANS LE DOM  **************************************/ 
 // Ajouter un article (ajout d'un id pour y rattacher les éléments enfants)
 function addArticle(basket, index) {
     let article = document.createElement("article");
@@ -378,7 +378,9 @@ document.getElementById("order").addEventListener("click", (e) => {
         .then((orderDetails) => sessionStorage.setItem('orderId', orderDetails.orderId))
         .catch((err) => console.log(err))
         // redirection vers l'url de la page de confirmation en fonction de l'orderId
-        window.location.href =`confirmation.html?orderId=${sessionStorage.getItem('orderId')}`;
+        setTimeout(() =>{
+            window.location.href =`confirmation.html?orderId=${sessionStorage.getItem('orderId')}`;
+        },100) 
     } else {
         alert ('Merci de renseigner correctement tous les champs pour envoyer votre commande')
     }
