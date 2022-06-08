@@ -9,5 +9,12 @@ let orderId = url.searchParams.get("orderId");
 const txtOrderId = document.getElementById('orderId');
 txtOrderId.textContent = orderId ;
 
+
 // effacement de l'orderId de stockage
-sessionStorage.clear();
+setTimeout (() => {
+    sessionStorage.clear();
+    localStorage.clear();
+    localStorage.setItem("basket",JSON.stringify([]));
+},50);
+
+
