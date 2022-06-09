@@ -96,16 +96,17 @@ clickToAdd.addEventListener("click",() => {
     } else {
         basket.push(product);
     }
+    // Ajout d'un style après avoir cliqué pour ajouter un produit
     clickToAdd.textContent = "Produit ajouté !";
     clickToAdd.style.color = '#3EFF00';
     clickToAdd.style.pointerEvents = 'none';
-
+    // Remise du style par défaut
     setTimeout(() => {
         clickToAdd.textContent = "Ajouter au panier";
         clickToAdd.style.color = 'white';
         clickToAdd.style.pointerEvents = 'auto';
 
-    }, 1000);
+    }, 500);
 
     saveToBasket(basket);
 });
