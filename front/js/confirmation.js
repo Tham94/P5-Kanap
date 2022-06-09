@@ -10,11 +10,10 @@ const txtOrderId = document.getElementById('orderId');
 txtOrderId.textContent = orderId ;
 
 
-// effacement de l'orderId de stockage
+// effacement de l'orderId de stockage et RAZ du panier
 setTimeout (() => {
     sessionStorage.clear();
     localStorage.clear();
-    localStorage.setItem("basket",JSON.stringify([]));
 },50);
 
 
