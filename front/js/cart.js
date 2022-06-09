@@ -114,11 +114,15 @@ function addDeleteProductContent(index) {
 
 
 /********************************************************   GESTION DU PANIER  *************************************************************/ 
-// Récupération du panier sous forme de tableau
-function getBasket() {
+// initialisation panier
+function getBasket(){
     let basket = localStorage.getItem("basket");
-    let basketArray = JSON.parse(basket);
-    return basketArray
+
+    if (basket !== null) {
+        return JSON.parse(basket);
+    }
+        
+    return [];
 }
 
 // Affichage quantité totale : filtrage avec map(), addition par paire de chaque quantité avec reduce()
@@ -318,12 +322,16 @@ function validateeMail () {
 }
 
 /**************************************************   ENVOI DU FORMULAIRE  *******************************************************/  
-// Définition du tableau products contenant les Ids des produits
-let products = [];
+
+// Récupération des Ids des produits seulement si le panier est existant
 function getAllProductId () {
-    return getBasket().map(p => p.id)
+    if (getBasket() != null) {
+        return getBasket().map(p => p.id)
+    } 
 }
 
+// Définition du tableau products contenant les Ids des produits
+let products = [];
 products = getAllProductId();
 
 // Stockage des valeurs des inputs dans le session storage pour construire l'objet contact
@@ -353,37 +361,49 @@ function getContactValues () {
 // Envoi du formulaire de contact et récupération de l'orderId
 document.getElementById("order").addEventListener("click", (e) => {
     e.preventDefault();
-    // Construction de l'objet contact
-    const contact = {
-        firstName : sessionStorage.getItem('firstName'),
-        lastName : sessionStorage.getItem('lastName'),
-        address : sessionStorage.getItem('address'),
-        city : sessionStorage.getItem('city'),
-        email : sessionStorage.getItem('email')
-    }
-    
-    const order = {contact,products};
 
-    if (validateFirstName() && validateName() && validateAddress() && validateCity() && validateeMail()) {
-        fetch ("http://localhost:3000/api/products/order", {
-            method : "POST",
-            body: JSON.stringify(order),
-            headers: {
-                "Content-type" : "application/json",
-                "Accept" : "application/json",
-            },
-        })
-        .then((res) =>  res.json())
-        //récupération de l'orderId dans le session storage
-        .then((orderDetails) => sessionStorage.setItem('orderId', orderDetails.orderId))
-        .catch((err) => console.log(err))
-        // redirection vers l'url de la page de confirmation en fonction de l'orderId
-        setTimeout(() =>{
-            window.location.href =`confirmation.html?orderId=${sessionStorage.getItem('orderId')}`;
-        },100) 
+    // Empêcher l'envoi de la commande si le panier est vide ou inexistant (dans le localStorage)
+    if (getBasket() == false || getBasket() == null) {
+        alert(`Vous devez constituer un panier d'achat avant d'envoyer votre commande`)
+
     } else {
-        alert ('Merci de renseigner correctement tous les champs pour envoyer votre commande')
+        // Construction de l'objet contact
+        const contact = {
+            firstName : sessionStorage.getItem('firstName'),
+            lastName : sessionStorage.getItem('lastName'),
+            address : sessionStorage.getItem('address'),
+            city : sessionStorage.getItem('city'),
+            email : sessionStorage.getItem('email')
+        }
+        
+        const order = {contact,products};
+
+        // Envoi de la commande uniquement si les champs correctement remplis 
+        if (validateFirstName() && validateName() && validateAddress() && validateCity() && validateeMail()) {
+            fetch ("http://localhost:3000/api/products/order", {
+                method : "POST",
+                body: JSON.stringify(order),
+                headers: {
+                    "Content-type" : "application/json",
+                    "Accept" : "application/json",
+                },
+            })
+            .then((res) => res.json())
+
+            // récupération de l'orderId dans le session storage
+            .then((orderDetails) => sessionStorage.setItem('orderId', orderDetails.orderId))
+            .catch((err) => console.log(err))
+
+            // redirection vers l'url de la page de confirmation en fonction de l'orderId
+            setTimeout(() =>{
+                window.location.href =`confirmation.html?orderId=${sessionStorage.getItem('orderId')}`;
+            },100) 
+
+        } else {
+            alert ('Merci de renseigner correctement tous les champs pour envoyer votre commande')
+        }
     }
+   
 });
 
 
